@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘의 네비게이션</title>
+    <style>
+        :root {
+            --primary-color: #2b4c7e;
+            --accent-color: #e67e22;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Malgun Gothic', dotum, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 24pt;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 11pt;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .card h2 {
+            font-size: 14pt;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+        }
+
+        .grid-inputs {
+            display: table;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .input-row {
+            display: table-row;
+        }
+
+        .input-cell {
+            display: table-cell;
+            padding: 8px;
+            vertical-align: middle;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 10pt;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 10pt;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12pt;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #1e3458;
+        }
+
+        .routine-item {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .routine-item h3 {
+            font-size: 11pt;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .routine-item p {
+            font-size: 10pt;
+            color: #64748b;
+        }
+
+        .destination-box {
+            background: #f0fdf4;
+            border: 2px dashed #16a34a;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .destination-box h3 {
+            color: #16a34a;
+            font-size: 14pt;
+            margin-bottom: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>오늘의 네비게이션</h1>
+        <p>100세 시대, 목적지까지 안전하게 안내하는 삶의 GPS</p>
+    </header>
+
+    <div class="card" id="step1">
+        <h2>1단계: 내 신체 정보 입력하기</h2>
+        <div class="grid-inputs">
+            <div class="input-row">
+                <div class="input-cell"><label>나이 (세)</label></div>
+                <div class="input-cell"><input type="number" id="age" value="55"></div>
+                <div class="input-cell"><label>성별</label></div>
+                <div class="input-cell">
+                    <select id="gender">
+                        <option value="male" selected>남성</option>
+                        <option value="female">여성</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-cell"><label>키 (cm)</label></div>
+                <div class="input-cell"><input type="number" id="height" value="175"></div>
+                <div class="input-cell"><label>체중 (kg)</label></div>
+                <div class="input-cell"><input type="number" id="weight" value="85"></div>
+            </div>
+            <div class="input-row">
+                <div class="input-cell"><label>현재 건강 정도</label></div>
+                <div class="input-cell" colspan="3">
+                    <select id="healthStatus">
+                        <option value="good">보통 (지병 없음, 술담배 끊음)</option>
+                        <option value="warning">주의 (과체중 관리 필요)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <button onclick="nextStep()">다음 단계로 이동 ➔</button>
+    </div>
+
+    <div class="card hidden" id="step2">
+        <h2>2단계: 나의 일과 시간 입력하기 (24시간 기준)</h2>
+        <p style="font-size: 9pt; color:#666; margin-bottom:15px;">* 시간은 숫자로만 입력해주세요 (예: 오전 7시 -> 7, 오후 6시 -> 18)</p>
+        <div class="grid-inputs">
+            <div class="input-row">
+                <div class="input-cell"><label>기상 시간</label></div>
+                <div class="input-cell"><input type="number" id="wakeTime" value="6" min="0" max="24"></div>
+                <div class="input-cell"><label>출근(업무시작)</label></div>
+                <div class="input-cell"><input type="number" id="workStart" value="8" min="0" max="24"></div>
+            </div>
+            <div class="input-row">
+                <div class="input-cell"><label>퇴근(업무종료)</label></div>
+                <div class="input-cell"><input type="number" id="workEnd" value="17" min="0" max="24"></div>
+                <div class="input-cell"><label>취침 시간</label></div>
+                <div class="input-cell"><input type="number" id="sleepTime" value="23" min="0" max="24"></div>
+            </div>
+        </div>
+        <button onclick="calculateNavigation()">내비게이션 가동 시작 🗺️</button>
+    </div>
+
+    <div class="card hidden" id="resultDashboard">
+        <h2>🧭 오늘의 맞춤형 운행 경로</h2>
+        <p id="timeAnalysis" style="font-weight: bold; margin-bottom: 20px; color: var(--primary-color);"></p>
+        
+        <div id="routineContainer">
+            </div>
+
+        <div class="destination-box">
+            <h3>🎯 최종 도착 목적지</h3>
+            <p id="destinationText"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 현재 요일 파악 (0: 일, 1: 월, 2: 화, 3: 수, 4: 목, 5: 금, 6: 토)
+    const daysKr = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+    const currentDayIdx = new Date().getDay();
+    const todayName = daysKr[currentDayIdx];
+
+    function nextStep() {
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
+    }
+
+    function calculateNavigation() {
+        // 시간 데이터 가져오기
+        const wake = parseInt(document.getElementById('wakeTime').value);
+        const workStart = parseInt(document.getElementById('workStart').value);
+        const workEnd = parseInt(document.getElementById('workEnd').value);
+        const sleep = parseInt(document.getElementById('sleepTime').value);
+        
+        // 간단한 유효 가용 시간 계산 (퇴근 후 취침 전까지 + 기상 후 출근 전까지 프리타임)
+        let freeTime = (sleep - workEnd) + (workStart - wake);
+        if (freeTime < 0) freeTime = 4; // 예외처리 최소 시간 보장
+
+        // 신체 조건에 따른 피드백 조정
+        const weight = parseInt(document.getElementById('weight').value);
+        const age = parseInt(document.getElementById('age').value);
+        
+        document.getElementById('step2').classList.add('hidden');
+        document.getElementById('resultDashboard').classList.remove('hidden');
+
+        // 상단 시간 분석 코멘트
+        document.getElementById('timeAnalysis').innerText = 
+            `박현 님, 분석 결과 하루 총 대기 여유 시간은 [ ${freeTime}시간 ] 입니다. 과체중(현재 ${weight}kg) 부담을 줄이면서 지치지 않도록 요일별로 여유 있게 순차 분배합니다.`;
+
+        // 요일별 순차 순환 콘텐츠 데이터베이스
+        const healthRoutines = [
+            "식후 30분 동네 가볍게 산책하기 (관절을 보호하며 혈당 내리기)",
+            "맨몸 스쿼트 5분 천천히 실행 후 가벼운 무릎 스트레칭",
+            "식후 20분 산책 및 척추 바르게 펴기 스트레칭",
+            "식후 30분 산책 (무리한 달리기 금지, 심폐 기능 유지)"
+        ];
+
+        const englishRoutines = [
+            "미국 현지 매너 및 문화 숏폼 영상 1개 보고 리액션 따라하기",
+            "비즈니스 현장 핵심 격언/위로 표현 1문장 소리 내어 3번 읽기",
+            "미국 마켓 트렌드 영문 제목 스캔하며 관심 키워드 1개 찾기",
+            "생활 밀착형 영어 회화 표현 1개 소리 내어 숙지하기"
+        ];
+
+        const hobbyRoutines = [
+            "선을 정밀하게 완성하려 하지 말고, 그리고 싶은 형상의 큰 '실루엣 외곽선'만 그리고 끝내기",
+            "화면 렌더링을 하듯, 어제 그린 선 안에 좋아하는 색 딱 한 가지만 채우고 오늘의 완성 선언하기",
+            "스케치북에 아주 단순한 형태의 사물이나 캐릭터 낙서 1개만 슥 그리고 도장 찍기",
+            "스케치북에 그리고 싶었던 풍경이나 형태의 구도만 대충 칸으로 나눠보고 붓 내려놓기"
+        ];
+
+        // 오늘 날짜 인덱스를 기준으로 순차적 매칭 (지치지 않게 가볍게 배분)
+        const hIdx = currentDayIdx % healthRoutines.length;
+        const eIdx = currentDayIdx % englishRoutines.length;
+        const bIdx = currentDayIdx % hobbyRoutines.length;
+
+        const routineHtml = `
+            <div style="margin-bottom: 15px; font-weight: bold; color: #e67e22;">📅 오늘은 ${todayName} 운행 경로입니다.</div>
+            
+            <div class="routine-item">
+                <h3>🏃‍♂️ [건강 내비] 순차 루틴 (권장: 25분)</h3>
+                <p>${healthRoutines[hIdx]}</p>
+            </div>
+            <div class="routine-item">
+                <h3>🔤 [영어 내비] 문화 및 소통 루틴 (권장: 15분)</h3>
+                <p>${englishRoutines[eIdx]}</p>
+            </div>
+            <div class="routine-item">
+                <h3>🎨 [취미 내비] 지치지 않는 창작 루틴 (권장: 15분)</h3>
+                <p>${hobbyRoutines[bIdx]}</p>
+            </div>
+        `;
+
+        document.getElementById('routineContainer').innerHTML = routineHtml;
+
+        // 성공 목적지 텍스트
+        document.getElementById('destinationText').innerText = 
+            `[ ${age}세의 박현 부장님 ]이 영어로 자유롭게 세상과 소통하며 지치지 않는 창작으로 꾸준한 파이프라인 수익을 올리고, 탄탄한 관절 체력으로 100세 인생을 정복한 미래의 성공 지점`;
+    }
+</script>
+
+</body>
+</html>
