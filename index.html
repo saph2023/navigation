@@ -11,6 +11,7 @@
             --bg-color: #f8f9fa;
             --card-bg: #ffffff;
             --text-color: #333333;
+            --success-color: #16a34a;
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Malgun Gothic', dotum, sans-serif; }
@@ -19,23 +20,42 @@
         header { text-align: center; padding: 30px 0; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         header h1 { font-size: 24pt; letter-spacing: 1px; }
         header p { font-size: 11pt; opacity: 0.9; margin-top: 5px; }
+        
         .card { background: var(--card-bg); padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .card h2 { font-size: 14pt; color: var(--primary-color); margin-bottom: 15px; border-left: 4px solid var(--primary-color); padding-left: 10px; }
+        
         .grid-inputs { display: table; width: 100%; margin-bottom: 15px; }
         .input-row { display: table-row; }
         .input-cell { display: table-cell; padding: 8px; vertical-align: middle; }
         label { font-weight: bold; font-size: 10pt; }
         input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 10pt; }
-        button { width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 12pt; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        
+        button { width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 11pt; font-weight: bold; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
         button:hover { background-color: #1e3458; }
-        .btn-edit { background-color: #64748b; padding: 8px 15px; font-size: 9pt; width: auto; display: inline-block; margin-top: 15px; }
-        .btn-edit:hover { background-color: #475569; }
-        .routine-item { background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--accent-color); }
-        .routine-item h3 { font-size: 11pt; color: #1e293b; margin-bottom: 5px; }
-        .routine-item p { font-size: 10pt; color: #64748b; }
+        
+        .streak-zone { background: #fff7ed; border: 1px solid #ffedd5; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px; font-size: 13pt; font-weight: bold; color: #c2410c; }
+        .streak-fire { font-size: 20pt; animation: pulse 1.5s infinite; display: inline-block; }
+        
+        .nav-btn { display: block; background: #f1f5f9; padding: 20px; border-radius: 8px; margin-bottom: 12px; text-align: left; border-left: 5px solid var(--primary-color); text-decoration: none; color: inherit; cursor: pointer; transition: transform 0.2s; }
+        .nav-btn:hover { transform: translateX(5px); background: #e2e8f0; }
+        .nav-btn h3 { font-size: 12pt; margin-bottom: 5px; display: flex; justify-content: space-between; }
+        .status-badge { font-size: 9pt; padding: 2px 8px; border-radius: 12px; background: #cbd5e1; }
+        .status-badge.complete { background: var(--success-color); color: white; }
+
+        .detail-view { background: #ffffff; border: 2px solid var(--primary-color); padding: 20px; border-radius: 12px; margin-top: 15px; }
+        .robot-msg { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 10pt; color: #475569; position: relative; }
+        .robot-msg::before { content: "🤖 로봇 코치 단호한 분석: "; font-weight: bold; color: #ef4444; }
+
+        .quiz-box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .choice-zone { display: flex; gap: 10px; margin: 10px 0; }
+        .btn-small { padding: 6px 12px; font-size: 9pt; width: auto; background-color: #64748b; }
+
         .destination-box { background: #f0fdf4; border: 2px dashed #16a34a; padding: 20px; border-radius: 12px; text-align: center; margin-top: 25px; }
         .destination-box h3 { color: #16a34a; font-size: 14pt; margin-bottom: 5px; }
+        .btn-edit { background-color: #94a3b8; padding: 6px 12px; font-size: 9pt; width: auto; display: inline-block; margin-top: 15px; }
         .hidden { display: none; }
+        
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -43,20 +63,20 @@
 <div class="container">
     <header>
         <h1>오늘의 네비게이션</h1>
-        <p>나이와 스케줄에 맞춰 목적지까지 안전하게 안내하는 삶의 GPS</p>
+        <p>포기하지 않고 100세 목적지까지 전진하는 개인 맞춤형 GPS</p>
     </header>
 
-    <!-- 1단계: 신체 및 기본 정보 입력 -->
+    <!-- 1단계: 프로필 입력창 -->
     <div class="card" id="step1">
         <h2>1단계: 기본 프로필 및 신체 정보</h2>
         <div class="grid-inputs">
             <div class="input-row">
                 <div class="input-cell"><label>이름 / 닉네임</label></div>
-                <div class="input-cell" colspan="3"><input type="text" id="userName" placeholder="이름을 입력하세요"></div>
+                <div class="input-cell" colspan="3"><input type="text" id="userName" placeholder="이름을 입력하세요" value="AA"></div>
             </div>
             <div class="input-row">
                 <div class="input-cell"><label>나이 (세)</label></div>
-                <div class="input-cell"><input type="number" id="age" value="30"></div>
+                <div class="input-cell"><input type="number" id="age" value="55"></div>
                 <div class="input-cell"><label>성별</label></div>
                 <div class="input-cell">
                     <select id="gender">
@@ -67,74 +87,88 @@
             </div>
             <div class="input-row">
                 <div class="input-cell"><label>키 (cm)</label></div>
-                <div class="input-cell"><input type="number" id="height" value="170"></div>
+                <div class="input-cell"><input type="number" id="height" value="175"></div>
                 <div class="input-cell"><label>체중 (kg)</label></div>
-                <div class="input-cell"><input type="number" id="weight" value="70"></div>
-            </div>
-            <div class="input-row">
-                <div class="input-cell"><label>현재 건강 정도</label></div>
-                <div class="input-cell" colspan="3">
-                    <select id="healthStatus">
-                        <option value="good">보통 (특이사항 없음)</option>
-                        <option value="warning">주의 (관련 지표 관리 필요)</option>
-                    </select>
-                </div>
+                <div class="input-cell"><input type="number" id="weight" value="85"></div>
             </div>
         </div>
         <button onclick="nextStep()">다음 단계로 이동 ➔</button>
     </div>
 
-    <!-- 2단계: 시간 정보 입력 -->
+    <!-- 2단계: 스케줄 입력창 -->
     <div class="card hidden" id="step2">
-        <h2>2단계: 나의 일과 시간 입력하기 (24시간 기준)</h2>
+        <h2>2단계: 나의 일과 스케줄 설정</h2>
         <div class="grid-inputs">
             <div class="input-row">
                 <div class="input-cell"><label>기상 시간</label></div>
                 <div class="input-cell"><input type="number" id="wakeTime" value="6"></div>
-                <div class="input-cell"><label>출근 / 등교시간</label></div>
-                <div class="input-cell"><input type="number" id="workStart" value="9"></div>
+                <div class="input-cell"><label>업무 시작시간</label></div>
+                <div class="input-cell"><input type="number" id="workStart" value="8"></div>
             </div>
             <div class="input-row">
-                <div class="input-cell"><label>퇴근 / 하교시간</label></div>
-                <div class="input-cell"><input type="number" id="workEnd" value="18"></div>
-                <div class="input-cell"><label>취침 시간</label></div>
+                <div class="input-cell"><label>업무 종료시간</label></div>
+                <div class="input-cell"><input type="number" id="workEnd" value="17"></div>
+                <div class="input-cell"><label>취침 예정시간</label></div>
                 <div class="input-cell"><input type="number" id="sleepTime" value="23"></div>
             </div>
         </div>
         <button onclick="saveAndBuild()">내비게이션 가동 시작 🗺️</button>
     </div>
 
-    <!-- 3단계: 결과 대시보드 -->
+    <!-- 3단계: 통합 메인 대시보드 -->
     <div class="card hidden" id="resultDashboard">
+        <!-- 마음의 불 (Streak 게이지) -->
+        <div class="streak-zone">
+            <span class="streak-fire">🔥</span> 연장된 마음의 불꽃: <span id="streakCount">0</span>일째 활성화 중
+        </div>
+
         <h2>🧭 오늘의 맞춤형 운행 경로</h2>
         <p id="timeAnalysis" style="font-weight: bold; margin-bottom: 20px; color: var(--primary-color);"></p>
         
-        <div id="routineContainer"></div>
+        <!-- 대메뉴 진입 버튼 구조 -->
+        <div class="nav-btn" onclick="openDetail('health')">
+            <h3>🏃‍♂️ [건강 내비] 세부 항목 진입 <span class="status-badge" id="badge-health">대기중</span></h3>
+            <p>체중 변화 상태 추적 및 일일 맞춤형 맨몸 근력 운행 코스</p>
+        </div>
+
+        <div class="nav-btn" onclick="openDetail('english')">
+            <h3>🔤 [영어 내비] 세부 항목 진입 <span class="status-badge" id="badge-english">대기중</span></h3>
+            <p>복습 퀴즈 기반의 문장 습득 및 유지를 위한 맞춤 조절 코스</p>
+        </div>
+
+        <div class="nav-btn" onclick="openDetail('hobby')">
+            <h3>🎨 [취미 내비] 세부 항목 진입 <span class="status-badge" id="badge-hobby">대기중</span></h3>
+            <p>초보자를 위한 기하학 기초 드로잉 훈련 및 자기 진단 자가 검증 코스</p>
+        </div>
+
+        <!-- 동적 세부내역 뷰 (클릭 시 하단에 활성화) -->
+        <div class="detail-view hidden" id="detailSection">
+            <h2 id="detailTitle">세부 일과 진행창</h2>
+            <div id="detailContent"></div>
+            <button onclick="closeDetail()" style="background:#64748b; margin-top:15px;">목록으로 돌아가기</button>
+        </div>
 
         <div class="destination-box">
             <h3>🎯 최종 도착 목적지</h3>
             <p id="destinationText"></p>
         </div>
-
         <button class="btn-edit" onclick="resetData()">⚙️ 내 정보 수정하기</button>
     </div>
 </div>
 
 <script>
-    const daysKr = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+    let currentCategory = '';
     const currentDayIdx = new Date().getDay();
-    const todayName = daysKr[currentDayIdx];
 
     window.onload = function() {
-        if (localStorage.getItem('navi_age')) { showDashboard(); }
+        if (localStorage.getItem('navi_age')) { 
+            if(!localStorage.getItem('navi_streak')) localStorage.setItem('navi_streak', '0');
+            showDashboard(); 
+        }
     }
 
     function nextStep() {
-        const nameInput = document.getElementById('userName').value.trim();
-        if(!nameInput) {
-            alert("이름 또는 닉네임을 입력해주세요.");
-            return;
-        }
+        if(!document.getElementById('userName').value.trim()) { alert("이름을 입력해주세요."); return; }
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.remove('hidden');
     }
@@ -147,89 +181,134 @@
         localStorage.setItem('navi_workStart', document.getElementById('workStart').value);
         localStorage.setItem('navi_workEnd', document.getElementById('workEnd').value);
         localStorage.setItem('navi_sleep', document.getElementById('sleepTime').value);
+        localStorage.setItem('navi_streak', '1');
         showDashboard();
     }
 
     function showDashboard() {
-        const name = localStorage.getItem('navi_name');
-        const age = parseInt(localStorage.getItem('navi_age'));
-        const weight = localStorage.getItem('navi_weight');
-        const wake = parseInt(localStorage.getItem('navi_wake'));
-        const workStart = parseInt(localStorage.getItem('navi_workStart'));
-        const workEnd = parseInt(localStorage.getItem('navi_workEnd'));
-        const sleep = parseInt(localStorage.getItem('navi_sleep'));
-
-        let freeTime = (sleep - workEnd) + (workStart - wake);
-        if (freeTime < 0) freeTime = 4;
-
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.add('hidden');
         document.getElementById('resultDashboard').classList.remove('hidden');
+        
+        document.getElementById('streakCount').innerText = localStorage.getItem('navi_streak');
+        const name = localStorage.getItem('navi_name');
+        const age = localStorage.getItem('navi_age');
+        const weight = localStorage.getItem('navi_weight');
+        
+        document.getElementById('timeAnalysis').innerText = `[ ${name} ] 님, 시스템 분석 완료. 무리하지 않고 완주하는 단계별 코스를 활성화합니다. (현재 체중 기준점: ${weight}kg)`;
+        document.getElementById('destinationText').innerText = `[ ${age}세의 전문 창작자 ${name} 님 ]이 영어로 자유롭게 소통하며 끊임없는 그림 창작으로 안정적 파이프라인 수익을 달성하고 100세 인생을 정복한 최종 성공 지점`;
+        
+        updateBadges();
+    }
 
-        if (age <= 19) {
-            document.getElementById('timeAnalysis').innerText = 
-                `[ ${name} ] 님 분석 결과 하루 여유 시간은 [ ${freeTime}시간 ] 입니다. 성장기 체력 증진과 미래 설계를 위해 요일별로 밀도 있게 분배합니다.`;
-        } else {
-            document.getElementById('timeAnalysis').innerText = 
-                `[ ${name} ] 님 분석 결과 하루 여유 시간은 [ ${freeTime}시간 ] 입니다. 신체 부담을 줄이면서 지치지 않도록 요일별로 여유 있게 순차 분배합니다.`;
+    function updateBadges() {
+        ['health', 'english', 'hobby'].forEach(cat => {
+            const isDone = localStorage.getItem(`navi_done_${cat}_${currentDayIdx}`);
+            const badge = document.getElementById(`badge-${cat}`);
+            if(isDone) {
+                badge.innerText = "완료";
+                badge.classList.add('complete');
+            } else {
+                badge.innerText = "진행대기";
+                badge.classList.remove('complete');
+            }
+        });
+    }
+
+    function openDetail(category) {
+        currentCategory = category;
+        const detailSection = document.getElementById('detailSection');
+        const title = document.getElementById('detailTitle');
+        const content = document.getElementById('detailContent');
+        detailSection.classList.remove('hidden');
+        
+        const weight = parseInt(localStorage.getItem('navi_weight'));
+        const isDone = localStorage.getItem(`navi_done_${category}_${currentDayIdx}`);
+
+        let html = '';
+
+        if(category === 'health') {
+            title.innerText = "🏃‍♂️ [건강 관리 내비게이션 복도]";
+            const exToday = currentDayIdx % 2 === 0 ? "스쿼트 10개 정자세 실시" : "팔굽혀펴기 10개 분할 실시";
+            
+            html = `
+                <div class="robot-msg">진도가 나가지 않거나 체크가 안 되면 시스템은 당신이 따라오고 있지 않다고 인지합니다. 현재 체중(${weight}kg)에서 장기 정체 시, 활동량 부족 또는 식단 오염 신호입니다. 기초대사량 내 정량 칼로리 섭취로 타협하십시오.</div>
+                <p style="font-weight:bold; margin-bottom:10px;">🎯 오늘의 정밀 미션: ${exToday}</p>
+                <button onclick="completeMission('health')" ${isDone?'disabled':''}>${isDone?'오늘 미션 완료됨':'미션 수행 완료 체크'}</button>
+            `;
+        } 
+        else if(category === 'english') {
+            title.innerText = "🔤 [영어 습득 및 지속 내비게이션 복도]";
+            html = `
+                <div class="robot-msg">우리의 목표는 화려한 정복이 아닌 '유지와 소통'입니다. 뇌에 장기 보존을 실행합니다.</div>
+                <div class="quiz-box">
+                    <strong>❓ [어제 복습 검증 퀴즈]</strong><br>
+                    어제 확인한 핵심 표현의 뜻을 머릿속으로 떠올려 보십시오. 제대로 연상하셨습니까?<br>
+                    <div class="choice-zone">
+                        <button class="btn-small" onclick="alert('참 잘하셨습니다! 뇌가 활성화되고 있습니다.')">네, 기억납니다</button>
+                        <button class="btn-small" onclick="alert('괜찮습니다. 오늘 분량을 조절하여 뇌의 과부하를 막으십시오.')">가물가물합니다</button>
+                    </div>
+                </div>
+                <p style="font-weight:bold; margin-bottom:5px;">📥 원하는 일일 집중 목표 선택</p>
+                <div class="choice-zone">
+                    <button class="btn-small" style="background:#2b4c7e;" onclick="loadSentences(3)">일반 코스 (3문장)</button>
+                    <button class="btn-small" style="background:#e67e22;" onclick="loadSentences(1)">부담 제로 코스 (1문장)</button>
+                </div>
+                <div id="englishSentences" style="margin-top:15px; font-weight:bold; color:#1e3c72;"></div>
+                <button id="engCompleteBtn" onclick="completeMission('english')" style="margin-top:20px;" class="hidden">오늘 문장 유지 확인 완료</button>
+            `;
+        } 
+        else if(category === 'hobby') {
+            title.innerText = "🎨 [그림 창작 기초 내비게이션 복도]";
+            html = `
+                <div class="robot-msg">초보자 단계를 타겟팅합니다. 조급해하면 손목과 마음이 지칩니다. 진도는 오직 유저의 마음에 달렸습니다.</div>
+                <p style="font-weight:bold; margin-bottom:10px;">📐 오늘의 기초 훈련: 직선 긋기 및 소실점을 활용한 기초 평면 따라하기</p>
+                <div class="quiz-box">
+                    <strong>❓ [자가 이해도 퀴즈]</strong><br>
+                    오늘 연습한 선 긋기에서 손목 스냅이 아닌 팔 전체를 사용하여 일정한 굵기를 유지해 보셨습니까?<br>
+                    <div class="choice-zone">
+                        <button class="btn-small" onclick="alert('완벽한 자세 제어입니다. 다음 단계 기초로 진입 가능합니다.')">예, 제어했습니다</button>
+                        <button class="btn-small" onclick="alert('선이 휜다면 속도를 조금 더 일정하게 조절해 보십시오.')">아직 어렵습니다</button>
+                    </div>
+                </div>
+                <button onclick="completeMission('hobby')" ${isDone?'disabled':''}>${isDone?'오늘 미션 완료됨':'오늘 단계 연습 완수하기'}</button>
+            `;
         }
 
-        let healthRoutines, englishRoutines, hobbyRoutines, destination;
+        content.innerHTML = html;
+        detailSection.scrollIntoView({ behavior: 'smooth' });
+    }
 
-        if (age <= 19) {
-            healthRoutines = [
-                "전신 스트레칭 후 플랭크 1분 3세트 실시 (코어 및 기초 체력 강화)",
-                "가벼운 제자리 뛰기 10분 후 푸쉬업 가능한 만큼 3세트",
-                "스쿼트 20회 3세트 후 하체 스트레칭 (성장판 자극)",
-                "버피 테스트 10회씩 2세트 (체력 한계 끌어올리기)"
-            ];
-            englishRoutines = [
-                "좋아하는 팝송이나 미드 속 일상 실전 표현 2개 외우기",
-                "영어 단어 5개 예문과 함께 노트에 적고 소리 내어 읽기",
-                "수능/토익 기출 지문 중 긴 문장 1개 완벽하게 구조 분석하기",
-                "영어 자막만 켜고 10분 동안 유튜브 영상 집중해서 시청하기"
-            ];
-            hobbyRoutines = [
-                "좋아하는 만화/애니메이션 캐릭터 얼굴 크로키 3개 빠르게 그리기",
-                "선 긋기 연습 및 사물의 투시(1점/2점 투시) 구도 연습하기",
-                "나만의 가상 캐릭터 설정집(성격, 무기 등) 메모장에 구상하기",
-                "인체 드로잉 비율(등신대) 가이드라인 맞춰서 인체 뼈대 잡아보기"
-            ];
-            destination = `[ ${age}세의 미래 인재 ${name} 님 ]이 탄탄한 실전 영어 실력과 독창적인 드로잉 기본기를 갖추고, 건강한 체력으로 글로벌 무대에서 꿈을 넓게 펼친 성공 지점`;
+    function loadSentences(count) {
+        const zone = document.getElementById('englishSentences');
+        if(count === 3) {
+            zone.innerHTML = `1. I'm on it. (제가 지금 하고 있습니다.)<br>2. Can you review this? (이것 검토해 주실 수 있나요?)<br>3. It's working out. (잘 해결되고 있습니다.)`;
         } else {
-            healthRoutines = [
-                "식후 30분 동네 가볍게 산책하기 (관절을 보호하며 혈당 내리기)",
-                "맨몸 스쿼트 5분 천천히 실행 후 가벼운 무릎 스트레칭",
-                "식후 20분 산책 및 척추 바르게 펴기 스트레칭",
-                "식후 30분 산책 (무리한 달리기 금지, 심폐 기능 유지)"
-            ];
-            englishRoutines = [
-                "미국 현지 매너 및 문화 숏폼 영상 1개 보고 리액션 따라하기",
-                "비즈니스 현장 핵심 격언/위로 표현 1문장 소리 내어 3번 읽기",
-                "미국 마켓 트렌드 영문 제목 스캔하며 관심 키워드 1개 찾기",
-                "생활 밀착형 영어 회화 표현 1개 소리 내어 숙지하기"
-            ];
-            hobbyRoutines = [
-                "선을 정밀하게 완성하려 하지 말고, 그리고 싶은 형상의 큰 '실루엣 외곽선'만 그리고 끝내기",
-                "화면 렌더링을 하듯, 어제 그린 선 안에 좋아하는 색 딱 한 가지만 채우고 오늘의 완성 선언하기",
-                "스케치북에 아주 단순한 형태의 사물이나 캐릭터 낙서 1개만 슥 그리고 도장 찍기",
-                "스케치북에 그리고 싶었던 풍경이나 형태의 구도만 대충 칸으로 나눠보고 붓 내려놓기"
-            ];
-            destination = `[ ${age}세의 전문 창작자 ${name} 님 ]이 영어로 자유롭게 세상과 소통하며 지치지 않는 창작으로 꾸준한 파이프라인 수익을 올리고, 탄탄한 체력으로 100세 인생을 정복한 미래의 성공 지점`;
+            zone.innerHTML = `1. Keep it up! (계속 그렇게 잘 유지하세요!)`;
         }
+        document.getElementById('engCompleteBtn').classList.remove('hidden');
+    }
 
-        const hIdx = currentDayIdx % healthRoutines.length;
-        const eIdx = currentDayIdx % englishRoutines.length;
-        const bIdx = currentDayIdx % hobbyRoutines.length;
+    function completeMission(category) {
+        localStorage.setItem(`navi_done_${category}_${currentDayIdx}`, 'true');
+        alert(`${category === 'health' ? '운동' : category === 'english' ? '영어' : '그림'} 미션이 클리어 되었습니다!`);
+        
+        // 3가지 미션이 모두 당일 완료되었는지 검증하여 마음의 불(Streak) 카운트 업
+        if(localStorage.getItem(`navi_done_health_${currentDayIdx}`) && 
+           localStorage.getItem(`navi_done_english_${currentDayIdx}`) && 
+           localStorage.getItem(`navi_done_hobby_${currentDayIdx}`)) {
+            let currentStreak = parseInt(localStorage.getItem('navi_streak') || '0');
+            currentStreak += 1;
+            localStorage.setItem('navi_streak', currentStreak.toString());
+            alert("🎉 축하합니다! 오늘의 3대 여정 완수로 '마음의 불꽃'이 활성화 및 연장되었습니다!");
+        }
+        
+        showDashboard();
+        closeDetail();
+    }
 
-        document.getElementById('routineContainer').innerHTML = `
-            <div style="margin-bottom: 15px; font-weight: bold; color: #e67e22;">📅 오늘은 ${todayName} 운행 경로입니다.</div>
-            <div class="routine-item"><h3>🏃‍♂️ [건강 내비] 순차 루틴</h3><p>${healthRoutines[hIdx]}</p></div>
-            <div class="routine-item"><h3>🔤 [영어 내비] 문화 및 소통 루틴</h3><p>${englishRoutines[eIdx]}</p></div>
-            <div class="routine-item"><h3>🎨 [취미 내비] 지치지 않는 창작 루틴</h3><p>${hobbyRoutines[bIdx]}</p></div>
-        `;
-
-        document.getElementById('destinationText').innerText = destination;
+    function closeDetail() {
+        document.getElementById('detailSection').classList.add('hidden');
     }
 
     function resetData() {
