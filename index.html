@@ -115,6 +115,19 @@
             background-color: #1e3458;
         }
 
+        .btn-edit {
+            background-color: #64748b;
+            padding: 8px 15px;
+            font-size: 9pt;
+            width: auto;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .btn-edit:hover {
+            background-color: #475569;
+        }
+
         .routine-item {
             background: #f1f5f9;
             padding: 15px;
@@ -197,72 +210,89 @@
 
     <div class="card hidden" id="step2">
         <h2>2단계: 나의 일과 시간 입력하기 (24시간 기준)</h2>
-        <p style="font-size: 9pt; color:#666; margin-bottom:15px;">* 시간은 숫자로만 입력해주세요 (예: 오전 7시 -> 7, 오후 6시 -> 18)</p>
         <div class="grid-inputs">
             <div class="input-row">
                 <div class="input-cell"><label>기상 시간</label></div>
-                <div class="input-cell"><input type="number" id="wakeTime" value="6" min="0" max="24"></div>
+                <div class="input-cell"><input type="number" id="wakeTime" value="6"></div>
                 <div class="input-cell"><label>출근(업무시작)</label></div>
-                <div class="input-cell"><input type="number" id="workStart" value="8" min="0" max="24"></div>
+                <div class="input-cell"><input type="number" id="workStart" value="8"></div>
             </div>
             <div class="input-row">
                 <div class="input-cell"><label>퇴근(업무종료)</label></div>
-                <div class="input-cell"><input type="number" id="workEnd" value="17" min="0" max="24"></div>
+                <div class="input-cell"><input type="number" id="workEnd" value="17"></div>
                 <div class="input-cell"><label>취침 시간</label></div>
-                <div class="input-cell"><input type="number" id="sleepTime" value="23" min="0" max="24"></div>
+                <div class="input-cell"><input type="number" id="sleepTime" value="23"></div>
             </div>
         </div>
-        <button onclick="calculateNavigation()">내비게이션 가동 시작 🗺️</button>
+        <button onclick="saveAndBuild()">내비게이션 가동 시작 🗺️</button>
     </div>
 
     <div class="card hidden" id="resultDashboard">
         <h2>🧭 오늘의 맞춤형 운행 경로</h2>
         <p id="timeAnalysis" style="font-weight: bold; margin-bottom: 20px; color: var(--primary-color);"></p>
         
-        <div id="routineContainer">
-            </div>
+        <div id="routineContainer"></div>
 
         <div class="destination-box">
             <h3>🎯 최종 도착 목적지</h3>
             <p id="destinationText"></p>
         </div>
+
+        <button class="btn-edit" onclick="resetData()">⚙️ 내 정보 수정하기</button>
     </div>
 </div>
 
 <script>
-    // 현재 요일 파악 (0: 일, 1: 월, 2: 화, 3: 수, 4: 목, 5: 금, 6: 토)
     const daysKr = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
     const currentDayIdx = new Date().getDay();
     const todayName = daysKr[currentDayIdx];
+
+    // [핵심] 페이지가 열릴 때 기존에 저장된 데이터가 있는지 확인하는 로직
+    window.onload = function() {
+        if (localStorage.getItem('navi_age')) {
+            // 저장된 데이터가 있다면 입력단계 건너뛰고 바로 내비게이션 실행
+            showDashboard();
+        }
+    }
 
     function nextStep() {
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.remove('hidden');
     }
 
-    function calculateNavigation() {
-        // 시간 데이터 가져오기
-        const wake = parseInt(document.getElementById('wakeTime').value);
-        const workStart = parseInt(document.getElementById('workStart').value);
-        const workEnd = parseInt(document.getElementById('workEnd').value);
-        const sleep = parseInt(document.getElementById('sleepTime').value);
-        
-        // 간단한 유효 가용 시간 계산 (퇴근 후 취침 전까지 + 기상 후 출근 전까지 프리타임)
-        let freeTime = (sleep - workEnd) + (workStart - wake);
-        if (freeTime < 0) freeTime = 4; // 예외처리 최소 시간 보장
+    // 데이터를 저장하고 내비게이션을 그리는 함수
+    function saveAndBuild() {
+        // 입력값을 메모리에 영구 저장
+        localStorage.setItem('navi_age', document.getElementById('age').value);
+        localStorage.setItem('navi_weight', document.getElementById('weight').value);
+        localStorage.setItem('navi_wake', document.getElementById('wakeTime').value);
+        localStorage.setItem('navi_workStart', document.getElementById('workStart').value);
+        localStorage.setItem('navi_workEnd', document.getElementById('workEnd').value);
+        localStorage.setItem('navi_sleep', document.getElementById('sleepTime').value);
 
-        // 신체 조건에 따른 피드백 조정
-        const weight = parseInt(document.getElementById('weight').value);
-        const age = parseInt(document.getElementById('age').value);
-        
+        showDashboard();
+    }
+
+    function showDashboard() {
+        // 메모리에서 데이터 꺼내오기
+        const age = localStorage.getItem('navi_age');
+        const weight = localStorage.getItem('navi_weight');
+        const wake = parseInt(localStorage.getItem('navi_wake'));
+        const workStart = parseInt(localStorage.getItem('navi_workStart'));
+        const workEnd = parseInt(localStorage.getItem('navi_workEnd'));
+        const sleep = parseInt(localStorage.getItem('navi_sleep'));
+
+        let freeTime = (sleep - workEnd) + (workStart - wake);
+        if (freeTime < 0) freeTime = 4;
+
+        document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.add('hidden');
         document.getElementById('resultDashboard').classList.remove('hidden');
 
-        // 상단 시간 분석 코멘트
         document.getElementById('timeAnalysis').innerText = 
-            `박현 님, 분석 결과 하루 총 대기 여유 시간은 [ ${freeTime}시간 ] 입니다. 과체중(현재 ${weight}kg) 부담을 줄이면서 지치지 않도록 요일별로 여유 있게 순차 분배합니다.`;
+            `분석 결과 하루 총 대기 여유 시간은 [ ${freeTime}시간 ] 입니다. 과체중(현재 ${weight}kg) 부담을 줄이면서 지치지 않도록 요일별로 여유 있게 순차 분배합니다.`;
 
-        // 요일별 순차 순환 콘텐츠 데이터베이스
+        // 요일별 컨텐츠 라이브러리
         const healthRoutines = [
             "식후 30분 동네 가볍게 산책하기 (관절을 보호하며 혈당 내리기)",
             "맨몸 스쿼트 5분 천천히 실행 후 가벼운 무릎 스트레칭",
@@ -284,35 +314,27 @@
             "스케치북에 그리고 싶었던 풍경이나 형태의 구도만 대충 칸으로 나눠보고 붓 내려놓기"
         ];
 
-        // 오늘 날짜 인덱스를 기준으로 순차적 매칭 (지치지 않게 가볍게 배분)
         const hIdx = currentDayIdx % healthRoutines.length;
         const eIdx = currentDayIdx % englishRoutines.length;
         const bIdx = currentDayIdx % hobbyRoutines.length;
 
-        const routineHtml = `
+        document.getElementById('routineContainer').innerHTML = `
             <div style="margin-bottom: 15px; font-weight: bold; color: #e67e22;">📅 오늘은 ${todayName} 운행 경로입니다.</div>
-            
-            <div class="routine-item">
-                <h3>🏃‍♂️ [건강 내비] 순차 루틴 (권장: 25분)</h3>
-                <p>${healthRoutines[hIdx]}</p>
-            </div>
-            <div class="routine-item">
-                <h3>🔤 [영어 내비] 문화 및 소통 루틴 (권장: 15분)</h3>
-                <p>${englishRoutines[eIdx]}</p>
-            </div>
-            <div class="routine-item">
-                <h3>🎨 [취미 내비] 지치지 않는 창작 루틴 (권장: 15분)</h3>
-                <p>${hobbyRoutines[bIdx]}</p>
-            </div>
+            <div class="routine-item"><h3>🏃‍♂️ [건강 내비] 순차 루틴</h3><p>${healthRoutines[hIdx]}</p></div>
+            <div class="routine-item"><h3>🔤 [영어 내비] 문화 및 소통 루틴</h3><p>${englishRoutines[eIdx]}</p></div>
+            <div class="routine-item"><h3>🎨 [취미 내비] 지치지 않는 창작 루틴</h3><p>${hobbyRoutines[bIdx]}</p></div>
         `;
 
-        document.getElementById('routineContainer').innerHTML = routineHtml;
-
-        // 성공 목적지 텍스트
         document.getElementById('destinationText').innerText = 
             `[ ${age}세의 박현 부장님 ]이 영어로 자유롭게 세상과 소통하며 지치지 않는 창작으로 꾸준한 파이프라인 수익을 올리고, 탄탄한 관절 체력으로 100세 인생을 정복한 미래의 성공 지점`;
     }
-</script>
 
+    // 정보 수정하고 싶을 때 메모리를 지우고 새로 고치는 함수
+    function resetData() {
+        localStorage.clear();
+        document.getElementById('resultDashboard').classList.add('hidden');
+        document.getElementById('step1').classList.remove('hidden');
+    }
+</script>
 </body>
 </html>
